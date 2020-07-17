@@ -1,137 +1,134 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:pemmob/db/database-helper.dart';
+import 'package:pemmob/db/user.dart';
 
 class DaftarPage extends StatefulWidget {
   @override
-  _DaftarPageState createState() => _DaftarPageState();
+  _DaftarPageState createState() => new _DaftarPageState();
 }
 
 class _DaftarPageState extends State<DaftarPage> {
-  String _name, _password, _username, _email = "";
-  bool _obscureText = true;
-
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
+  BuildContext _ctx;
+  bool _isLoading = false;
+  final formKey = new GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  String _fullname,
+      _username,
+      _password,
+      _email,
+      _tgllahir,
+      _alamat,
+      _pendterakhir;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Align(
-          alignment: Alignment.center,
-          child: Padding(
-            padding:
-                EdgeInsets.only(top: MediaQuery.of(context).size.height * .2),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: MediaQuery.of(context).size.width * .25),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: Container(
-                      width: 100.0,
-                      height: 100.0,
-                      child: Image.asset(
-                          "assets/image/regis.png",
-                          fit: BoxFit.cover),
-                    ),
-                  ),
+    _ctx = context;
+    var loginBtn = new RaisedButton(
+      onPressed: _submit,
+      child: new Text("Register"),
+      color: Colors.green,
+    );
+
+    var loginForm = new Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new Text(
+          "Sqflite App Login",
+          textScaleFactor: 2.0,
+        ),
+        new Form(
+          key: formKey,
+          child: new Column(
+            children: <Widget>[
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _fullname = val,
+                  decoration: new InputDecoration(labelText: "Full Name"),
                 ),
-                SizedBox(height: 36.0),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 48.0),
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          labelText: "Full Name",
-                          hintText: "E.g. Johannes Van Andersen",
-                        ),
-                        onChanged: (String name) {
-                          setState(() {
-                            _name = name;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 24.0,),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          labelText: "Username",
-                          hintText: "E.g. yohann123",
-                        ),
-                        onChanged: (String username) {
-                          setState(() {
-                            _username = username;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 24.0,),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          labelText: "Email",
-                          hintText: "E.g. xxxxx@xxx.xxx",
-                        ),
-                        onChanged: (String email) {
-                          setState(() {
-                            _email = email;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 24.0),
-                      TextFormField(
-                        keyboardType: TextInputType.text,
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          hintText: "E.g. admin123",
-                          suffixIcon: IconButton(
-                            onPressed: _toggle,
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.lock_outline
-                                  : Icons.lock_open,
-                            ),
-                          ),
-                        ),
-                        onChanged: (String password) {
-                          setState(() {
-                            _password = password;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _username = val,
+                  decoration: new InputDecoration(labelText: "Username"),
                 ),
-                SizedBox(height: 60.0),
-                Builder(
-                  builder: (context) => RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Text(
-                      "Daftar",
-                      style: TextStyle(
-                        color: Color(0xFFF6F6F6),
-                      ),
-                    ),
-                    color: Color(0xFF205DC3),
-                    onPressed: () {},
-                  ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _password = val,
+                  decoration: new InputDecoration(labelText: "Password"),
                 ),
-              ],
-            ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _email = val,
+                  decoration: new InputDecoration(labelText: "Email"),
+                ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _tgllahir = val,
+                  decoration: new InputDecoration(labelText: "Date of Birth"),
+                ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _alamat = val,
+                  decoration: new InputDecoration(labelText: "Address"),
+                ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: new TextFormField(
+                  onSaved: (val) => _pendterakhir = val,
+                  decoration: new InputDecoration(labelText: "Last Education"),
+                ),
+              )
+            ],
           ),
+        ),
+        loginBtn
+      ],
+    );
+
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("Register"),
+      ),
+      key: scaffoldKey,
+      body: new Container(
+        child: new Center(
+          child: loginForm,
         ),
       ),
     );
+  }
+
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(text),
+    ));
+  }
+
+  void _submit() {
+    final form = formKey.currentState;
+
+    if (form.validate()) {
+      setState(() {
+        _isLoading = true;
+        form.save();
+        var user = new User(_fullname, _username, _password, _email, _tgllahir,
+            _alamat, _pendterakhir);
+        var db = new DatabaseHelper();
+        db.saveUser(user);
+        _isLoading = false;
+        Navigator.of(context).pushNamed("/login");
+      });
+    }
   }
 }

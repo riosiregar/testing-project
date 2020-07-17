@@ -1,3 +1,3 @@
 import 'package:flutter/material.dart';
 
-Image myImage = Image.asset("assets/image/avatar.jpg");
+Image myImage = Image.asset("assets/image/avatar.png");
